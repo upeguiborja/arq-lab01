@@ -25,6 +25,7 @@ public class CustomerController {
     }
 
     // Obtener un cliente por un Id
+    @GetMapping("/{id}")
     public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
         return ResponseEntity.ok(customerFacade.getCustomerById(id));
     }

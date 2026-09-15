@@ -9,7 +9,9 @@ import com.udea.banco.banco2025.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TransactionService {
@@ -28,9 +30,28 @@ public class TransactionService {
         this.transactionMapper = transactionMapper;
     }
 
+    public List<TransactionDTO> getAllTransactions() {
+        return transactionRepository.findAll().stream()
+                .map(transactionMapper::toDTO)
+                .toList();
+    }
+
+    public Optional<TransactionDTO> getTransactionById(Long id) {
+        return transactionRepository.findById(id)
+                .map(transactionMapper::toDTO);
+    }
+
+    public TransactionDTO createTransaction(TransactionDTO transactionDTO) {
+        return transferMoney(transactionDTO);
+    }
+
     public TransactionDTO transferMoney(TransactionDTO transactionDTO) {
         if (transactionDTO.getSenderAccountNumber() == null || transactionDTO.getReceiverAccountNumber() == null) {
             throw new IllegalArgumentException("Sender Account Number or Receiver Account Number cannot be null");
+        }
+
+        if (transactionDTO.getAmount() == null) {
+            throw new IllegalArgumentException("Amount cannot be null");
         }
 
         Customer sender = customerRepository.findByAccountNumber(transactionDTO.getSenderAccountNumber())
@@ -54,10 +75,42 @@ public class TransactionService {
 
         // Crear y guardar la transacción
         Transaction transaction = transactionMapper.toEntity(transactionDTO);
+        if (transaction.getTimestamp() == null) {
+            transaction.setTimestamp(LocalDateTime.now());
+        }
         transaction = transactionRepository.save(transaction);
 
         // Devolver la transacción creada como un DTO
         return transactionMapper.toDTO(transaction);
+    }
+
+    public Optional<TransactionDTO> updateTransaction(Long id, TransactionDTO transactionDTO) {
+        return transactionRepository.findById(id).map(existingTransaction -> {
+            if (transactionDTO.getSenderAccountNumber() != null) {
+                existingTransaction.setSenderAccountNumber(transactionDTO.getSenderAccountNumber());
+            }
+            if (transactionDTO.getReceiverAccountNumber() != null) {
+                existingTransaction.setReceiverAccountNumber(transactionDTO.getReceiverAccountNumber());
+            }
+            if (transactionDTO.getAmount() != null) {
+                existingTransaction.setAmount(transactionDTO.getAmount());
+            }
+            if (transactionDTO.getTimestamp() != null) {
+                existingTransaction.setTimestamp(transactionDTO.getTimestamp());
+            } else if (existingTransaction.getTimestamp() == null) {
+                existingTransaction.setTimestamp(LocalDateTime.now());
+            }
+            Transaction updated = transactionRepository.save(existingTransaction);
+            return transactionMapper.toDTO(updated);
+        });
+    }
+
+    public boolean deleteTransaction(Long id) {
+        if (transactionRepository.existsById(id)) {
+            transactionRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     public List<TransactionDTO> getTransactionsForAccount(String accountNumber) {

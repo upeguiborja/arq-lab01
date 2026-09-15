@@ -25,4 +25,11 @@ public class Transaction {
 
     @Column(nullable = false)
     private LocalDateTime timestamp;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.timestamp == null) {
+            this.timestamp = LocalDateTime.now();
+        }
+    }
 }

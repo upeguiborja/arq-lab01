@@ -1,0 +1,17 @@
+services:
+  mysql:
+    image: docker.io/library/mysql:8.0
+    container_name: mysql-banco
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-banco2025}
+      MYSQL_USER: ${MYSQL_USER:-banco_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

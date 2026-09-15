@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Tag(name = "Customers", description = "Operaciones relacionadas con los clientes")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/customers")
 public class CustomerController {
@@ -41,5 +42,24 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<CustomerDTO> createCustomer(@Valid @RequestBody CustomerDTO customerDTO) {
         return ResponseEntity.ok(customerFacade.createCustomer(customerDTO));
+    }
+
+    // Actualizar un cliente existente
+    @Operation(summary = "Actualizar un cliente existente")
+    @PutMapping("/{id}")
+    public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable Long id, @Valid @RequestBody CustomerDTO customerDTO) {
+        return customerFacade.updateCustomer(id, customerDTO)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Eliminar un cliente por Id
+    @Operation(summary = "Eliminar un cliente por su ID")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
+        if (customerFacade.deleteCustomer(id)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

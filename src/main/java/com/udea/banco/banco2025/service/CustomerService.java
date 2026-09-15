@@ -36,4 +36,31 @@ public class CustomerService {
         Customer customer = customerMapper.toEntity(customerDTO);
         return customerMapper.toDTO(customerRepository.save(customer));
     }
+
+    public java.util.Optional<CustomerDTO> updateCustomer(Long id, CustomerDTO customerDTO) {
+        return customerRepository.findById(id).map(existing -> {
+            if (customerDTO.getFirstName() != null) {
+                existing.setFirstName(customerDTO.getFirstName());
+            }
+            if (customerDTO.getLastName() != null) {
+                existing.setLastName(customerDTO.getLastName());
+            }
+            if (customerDTO.getAccountNumber() != null) {
+                existing.setAccountNumber(customerDTO.getAccountNumber());
+            }
+            if (customerDTO.getBalance() != null) {
+                existing.setBalance(customerDTO.getBalance());
+            }
+            Customer updated = customerRepository.save(existing);
+            return customerMapper.toDTO(updated);
+        });
+    }
+
+    public boolean deleteCustomer(Long id) {
+        if (customerRepository.existsById(id)) {
+            customerRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Tag(name = "Transactions", description = "Operaciones relacionadas con las transferencias y transacciones")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/transactions")
 public class TransactionController {

@@ -11,6 +11,10 @@
 
 ---
 
+https://github.com/user-attachments/assets/709ae614-6952-4740-92fc-2efc91b7c894
+
+---
+
 ## 1. Introducción
 
 En el marco del curso de Arquitectura de Software, este laboratorio tuvo como propósito introducir el desarrollo de aplicaciones empresariales bajo el ecosistema **Spring Boot**, aplicando una arquitectura por capas que separa claramente las responsabilidades del sistema (presentación, lógica de negocio, acceso a datos y modelo de dominio).
